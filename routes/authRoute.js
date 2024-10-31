@@ -1,5 +1,7 @@
 import express from 'express'
 import User from '../models/userModel.js'
+import bcrypt from 'bcryptjs'
+
 const router = express.Router()
 
 //Route login page: GET=> http://localhost:3000/login
@@ -33,17 +35,23 @@ router.post('/register', async (req, res) => {
     const { name, email, password } = req.body
     try {
         const exists = await User.findOne({ email })
-        if(exists){
-            req.flash('error','User already exists with this email')
+        if (exists) {
+            req.flash('error', 'User already exists with this email')
             return res.redirect('/register')
         }
+        const hashedPassword = bcrypt.hash(password, 10)
         const user = new User({
             name,
             email,
-            password
+            password: hashedPassword,
         })
+        user.save()
+        req.flash('success', 'User registered successfully, You can login now!')
+        return res.redirect('/login')
     } catch (error) {
-
+        console.log(error)
+        req.flash('error', 'Somethin went wrong, Try again!')
+        return res.redirect('/login')
     }
 })
 
