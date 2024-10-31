@@ -1,4 +1,5 @@
 import express from 'express'
+import User from '../models/userModel.js'
 const router = express.Router()
 
 //Route login page: GET=> http://localhost:3000/login
@@ -24,6 +25,26 @@ router.get('/reset-password', function (req, res) {
 //Route Register page: GET=> http://localhost:3000/profile
 router.get('/profile', function (req, res) {
     return res.render('profile', { title: 'Profile page' })
+})
+
+//Route Register page: POST=> http://localhost:3000/register
+router.post('/register', async (req, res) => {
+    // console.log(req.body)
+    const { name, email, password } = req.body
+    try {
+        const exists = await User.findOne({ email })
+        if(exists){
+            req.flash('error','User already exists with this email')
+            return res.redirect('/register')
+        }
+        const user = new User({
+            name,
+            email,
+            password
+        })
+    } catch (error) {
+
+    }
 })
 
 export default router
