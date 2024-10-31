@@ -5,7 +5,7 @@ const postSchema = new Schema({
     slug: String,
     content: String,
     image: String,
-    CreatedAt: {
+    createdAt: {
         type: Date,
         default: new Date(),
     },
